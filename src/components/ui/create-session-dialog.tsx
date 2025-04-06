@@ -12,7 +12,8 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Button } from "./button";
 import { Switch } from "./switch";
-import { CreateSession } from "@/lib/create-session";
+import { CreateSession } from "@/actions/create-session";
+
 
 export function CreateSessionDialog() {
     const [name, setName] = useState("")
