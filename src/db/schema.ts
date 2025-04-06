@@ -31,15 +31,17 @@ import {
   // ---------------------- SESSIONS ----------------------
   export const sessions = pgTable("sessions", {
     id: uuid("id").defaultRandom().primaryKey(), // UUID with default gen
+    name: text("name").notNull(),
     content: bytea("content"),
     whiteboardContent: bytea("whiteboard_content"),
+    is_anyone_allowed: boolean("is_anyone_allowed").notNull()
   });
   
   // ---------------------- MAPPING ----------------------
   export const sessionToUserMapping = pgTable("session_to_user_mapping", {
     id: serial("id").primaryKey(),
     sessionId: uuid("session_id").notNull().references(() => sessions.id),
-    userId: bigint("user_id", { mode: "number" }).notNull().references(() => users.id),
+    user_email: text("user_email").notNull().references(() => users.email),
     is_admin: boolean("is_admin").notNull()
   });
   
