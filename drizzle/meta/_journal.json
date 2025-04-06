@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1743874023390,
+      "tag": "0000_true_warpath",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1743901809069,
+      "tag": "0001_amazing_prowler",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1743901968468,
+      "tag": "0002_lethal_baron_strucker",
+      "breakpoints": true
+    }
+  ]
+}

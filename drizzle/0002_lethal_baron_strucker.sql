@@ -1,0 +1,1 @@
+ALTER TABLE "session_to_user_mapping" ADD COLUMN "is_admin" boolean NOT NULL;
