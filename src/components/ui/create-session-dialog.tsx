@@ -20,6 +20,7 @@ export function CreateSessionDialog() {
     const [username, setUsername] = useState("")
     const [enabled, setEnabled] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
+    const [open, setOpen] = useState(false)
     async function handleCreate() {
         if (isLoading) return; // ⛔ Prevent spamming
 
@@ -34,10 +35,12 @@ export function CreateSessionDialog() {
             console.error("Error creating session:", err);
         } finally {
             setIsLoading(false);
+            setOpen(false)
+            
         }
     }
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button className="m-2 text-lg p-5">Create</Button>
             </DialogTrigger>

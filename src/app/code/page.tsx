@@ -1,10 +1,11 @@
-import EditorFragment from "@/components/ui/editor";
+import EditorFragment from "@/components/ui/editor/editor";
 import { getServerSession } from "next-auth"
 import { env } from "process";
 import dynamic from "next/dynamic";
-import EditorWrapper from "@/components/ui/editor-wrapper";
-
-
+import EditorWrapper from "@/components/ui/editor/editor-wrapper";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import JudgeOutputPane from "@/components/ui/judge-output-pane";
+import UpperLegendPane from "@/components/ui/editor/upper-legend-pane";
 
 export default async function CodePage({
     searchParams
@@ -18,6 +19,17 @@ export default async function CodePage({
     console.log(wsServerUrl)
     console.log(session_id, "is the session ID")
     return (<>
-        <EditorWrapper language="javascript" room={session_id! as string} wsUrl={wsServerUrl! as string} />
+    <div>
+        <UpperLegendPane />
+        <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel defaultSize={80}>
+                <EditorWrapper language="javascript" room={session_id! as string} wsUrl={wsServerUrl! as string} />
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel>
+                <JudgeOutputPane />
+            </ResizablePanel>
+        </ResizablePanelGroup>
+    </div>
     </>)
 }

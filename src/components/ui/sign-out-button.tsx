@@ -10,7 +10,7 @@ export default function SignOutButton() {
         setLoading(true);
         
         signOut()
-        window.location.href = "/";
+        window.location.href = "/login";
     };
 
     return (<>
