@@ -38,25 +38,34 @@ export default function UpperLegendPane({
                 </SelectContent>
             </Select>
             <div className="flex w-full h-full items-center justify-center">
-                <span className="whitespace-nowrap  font-semibold h-full p-2">
-                    Users connected:
-                </span>
-                <ScrollArea className="w-full h-full p-0 m-0 rounded-md" >
-                    <div className="whitespace-nowrap p-2">
-                        {[...data.entries()].map(([user_name, inside_set]) => {
-                            return (<span key={user_name} className="flex items-center justify-center w-fit">
-                                {user_name}: {[...inside_set].map(([color, clientId]) => {
-                                    return (<>
-                                        <span className={`mx-1 h-3 w-3 block rounded-full`} style={{ backgroundColor: color }}
-                                            key={clientId}>
-                                        </span>
-                                    </>)
-                                })}
-                            </span>)
-                        })}
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                </ScrollArea>
+                {
+                    [...data.entries()].length > 0 ?
+                        <>
+                            <span className="whitespace-nowrap  font-semibold h-full p-2">
+                                Users connected:
+                            </span>
+                            <ScrollArea className="w-full h-full p-0 m-0 rounded-md" >
+                                <div className="whitespace-nowrap p-2">
+                                    {[...data.entries()].map(([user_name, inside_set]) => {
+                                        return (<span key={user_name} className="flex items-center justify-center w-fit">
+                                            {user_name}: {[...inside_set].map(([color, clientId]) => {
+                                                return (<>
+                                                    <span className={`mx-1 h-3 w-3 block rounded-full`} style={{ backgroundColor: color }}
+                                                        key={clientId}>
+                                                    </span>
+                                                </>)
+                                            })}
+                                        </span>)
+                                    })}
+                                </div>
+                                <ScrollBar orientation="horizontal" />
+                            </ScrollArea>
+                        </>
+                        : <span className="whitespace-nowrap w-full h-full p-2">
+                            No other users connected yet
+                        </span>
+                }
+
             </div>
 
 

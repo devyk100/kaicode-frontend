@@ -6,6 +6,8 @@ import EditorWrapper from "@/components/ui/editor/editor-wrapper";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import JudgeOutputPane from "@/components/ui/judge-output-pane";
 import UpperLegendPane from "@/components/ui/editor/upper-legend-pane";
+import { getRedisClient } from "@/lib/redis";
+import { FetchContent } from "@/actions/fetch-content";
 
 export default async function CodePage({
     searchParams
@@ -18,12 +20,13 @@ export default async function CodePage({
     const wsServerUrl = env.WS_URL;
     console.log(wsServerUrl)
     console.log(session_id, "is the session ID")
+    const content = await FetchContent(session_id as string)
     return (<>
     <div>
         <UpperLegendPane />
         <ResizablePanelGroup direction="horizontal">
             <ResizablePanel defaultSize={80}>
-                <EditorWrapper language="javascript" room={session_id! as string} wsUrl={wsServerUrl! as string} />
+                <EditorWrapper content={content || ""} language="javascript" room={session_id! as string} wsUrl={wsServerUrl! as string} />
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel>

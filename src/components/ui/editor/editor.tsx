@@ -8,6 +8,7 @@ import Editor from '@monaco-editor/react'
 import { getSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useMapSetStore } from '@/store/use-colormap-store'
+import { useSyncWsStore } from '@/store/use-sync-ws-store'
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -25,43 +26,69 @@ function debounceAsync<T>(fn: () => Promise<T>, delay: number): Promise<T> {
   });
 }
 
-
 function getRandomColor() {
   const hue = Math.floor(Math.random() * 360)
-  return `hsl(${hue}, 80%, 70%)`
+  const saturation = Math.floor(Math.random() * 40) + 60   // 60% to 100%
+  const lightness = Math.floor(Math.random() * 30) + 50    // 50% to 80%
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`
 }
 
 function EditorFragment({
   wsUrl,
   room,
   language,
+  content
 }: {
   wsUrl: string;
   room: string;
   language: string;
+  content: string
 }) {
   console.log(wsUrl, room, language, "FOR THE EDITOR SETUp")
-  const ydoc = useMemo(() => new Y.Doc(), [])
+  const ydoc = useMemo(() => new Y.Doc(), []);
+
   const [editor, setEditor] = useState<any | null>(null)
   const [provider, setProvider] = useState<WebsocketProvider | null>(null)
   const [binding, setBinding] = useState<MonacoBinding | null>(null)
   const editorRef = useRef(null);
-  const {resolvedTheme} = useTheme()
-  const {data, addValue, resetAll, removeClientIdFromAll} = useMapSetStore()
+  const { resolvedTheme } = useTheme()
+  const { data, addValue, resetAll, removeClientIdFromAll } = useMapSetStore()
   // this effect manages the lifetime of the Yjs document and the provider
+  const { connect, send } = useSyncWsStore()
   useEffect(() => {
-    const provider = new WebsocketProvider(wsUrl, room, ydoc)
+    const provider = new WebsocketProvider(wsUrl + "ws", room, ydoc)
+    connect(wsUrl + "sync")
     setProvider(provider);
+
+
+    const handleStatus = (event: { status: "connected" | "disconnected" | "connecting" }) => {
+      if (event.status === "connected") {
+        console.log("✅ Connected to Y-WebSocket");
+  
+        setTimeout(() => {
+          const hasSynced = provider.synced;
+          const clientCount = provider.awareness.getStates().size;
+  
+          if (!hasSynced && clientCount <= 1) {
+            console.log("Lone wolf client, no other collaborators connecte yet.");
+            const ytext = ydoc.getText();
+            if (ytext.toString().length === 0) {
+              ytext.insert(0, content);
+            }
+          }
+        }, 1000); // a slight delay, to let others connect
+      }
+    };
+  
+    provider.on("status", handleStatus);
+  
+
     (async (provider) => {
-        const user = await getSession()
-        provider.ws?.send(JSON.stringify({
-          token: user?.user.token,
-          user_id: user?.user.id
-        }))
-        provider.awareness.setLocalStateField('user', {
-          name: `${user?.user.name}`,
-          color: getRandomColor()
-        })
+      const user = await getSession()
+      provider.awareness.setLocalStateField('user', {
+        name: `${user?.user.name}`,
+        color: getRandomColor()
+      })
     })(provider)
 
     return () => {
@@ -93,7 +120,7 @@ function EditorFragment({
       })
       console.log(clientColorMap, "is the color map")
     }
-    
+
     updateClientColorMap()
 
     const applyColorToCursor = (clientId: number, color: string) => {
@@ -130,8 +157,8 @@ function EditorFragment({
 
     const onAwarenessChange = ({ added, updated, removed }: any) => {
       console.log(removed, "are the removed client")
-      if(removed.length > 0) {
-        for(let a of removed) {
+      if (removed.length > 0) {
+        for (let a of removed) {
           removeClientIdFromAll(String(a))
         }
       }
@@ -167,6 +194,17 @@ function EditorFragment({
   // @ts-ignore
   function handleEditorDidMount(editor, monaco) {
     setEditor(editor)
+
+    // sync tick to the ws server
+    setInterval(async () => {
+      send(JSON.stringify({
+        event: "sync",
+        content: editor.getValue(),
+        room_name: room
+      }))
+    }, 1000)
+
+
     monaco.languages.registerInlineCompletionsProvider(language, {
       // @ts-ignore
       provideInlineCompletions(model, position, context, token) {
@@ -186,7 +224,7 @@ function EditorFragment({
           
           Prefix:
           `;
-          
+
 
           try {
             const controller = new AbortController();
@@ -243,20 +281,20 @@ function EditorFragment({
   }
 
 
-  return <Editor  className='w-full h-[calc(100vh-50px-57px)]' theme={"vs-"+resolvedTheme} defaultLanguage={language} language={language} onMount={handleEditorDidMount}
-  options={{
-    quickSuggestions: {
-      other: "inline",
-      comments: "inline",
-      strings: "inline",
-    },
-    inlineSuggest: {
-      enabled: true,
-    },
-    suggestOnTriggerCharacters: true,
-    tabCompletion: "on",
-    acceptSuggestionOnEnter: "on",
-  }}
+  return <Editor className='w-full h-[calc(100vh-50px-57px)]' theme={"vs-" + resolvedTheme} defaultLanguage={language} language={language} onMount={handleEditorDidMount}
+    options={{
+      quickSuggestions: {
+        other: "inline",
+        comments: "inline",
+        strings: "inline",
+      },
+      inlineSuggest: {
+        enabled: true,
+      },
+      suggestOnTriggerCharacters: true,
+      tabCompletion: "on",
+      acceptSuggestionOnEnter: "on",
+    }}
   />
 }
 
