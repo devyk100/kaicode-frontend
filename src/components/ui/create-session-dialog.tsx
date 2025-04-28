@@ -25,8 +25,9 @@ export function CreateSessionDialog() {
         if (isLoading) return; // ⛔ Prevent spamming
 
         setIsLoading(true);
+        let session;
         try {
-            const session = await CreateSession({
+            session = await CreateSession({
                 is_anyone_allowed: enabled,
                 name: name
             })
@@ -36,7 +37,7 @@ export function CreateSessionDialog() {
         } finally {
             setIsLoading(false);
             setOpen(false)
-            
+            window.location.href = `code?session_id=${session?.id}`
         }
     }
     return (

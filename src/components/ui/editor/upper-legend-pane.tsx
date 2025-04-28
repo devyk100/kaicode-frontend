@@ -12,17 +12,18 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 
 export default function UpperLegendPane({
-    language
+    defaultLanguage
 }: {
-    language: string;
+    defaultLanguage: string;
 }) {
     const { data } = useMapSetStore()
+    
     useEffect(() => {
         console.log(data, "is the map of user name to color")
     }, [data])
     return (<>
         <div className="h-[50px] flex w-full items-center p-1">
-            <Select value={language} onValueChange={(val) => {
+            <Select value={defaultLanguage} onValueChange={(val) => {
                 console.log("value changed to this", val)
                 // make a call to change the language of this session, only allowed by the admin
             }}>

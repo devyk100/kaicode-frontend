@@ -9,6 +9,7 @@ import { getSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useMapSetStore } from '@/store/use-colormap-store'
 import { useSyncWsStore } from '@/store/use-sync-ws-store'
+import { useCodeStore } from '@/store/use-code-store'
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -50,16 +51,16 @@ function EditorFragment({
   const [editor, setEditor] = useState<any | null>(null)
   const [provider, setProvider] = useState<WebsocketProvider | null>(null)
   const [binding, setBinding] = useState<MonacoBinding | null>(null)
-  const editorRef = useRef(null);
+  // const editorRef = useRef(null);
   const { resolvedTheme } = useTheme()
   const { data, addValue, resetAll, removeClientIdFromAll } = useMapSetStore()
   // this effect manages the lifetime of the Yjs document and the provider
   const { connect, send } = useSyncWsStore()
+  const {setInitialCode, setCode} = useCodeStore()
   useEffect(() => {
     const provider = new WebsocketProvider(wsUrl + "ws", room, ydoc)
     connect(wsUrl + "sync")
     setProvider(provider);
-
 
     const handleStatus = (event: { status: "connected" | "disconnected" | "connecting" }) => {
       if (event.status === "connected") {
@@ -74,6 +75,7 @@ function EditorFragment({
             const ytext = ydoc.getText();
             if (ytext.toString().length === 0) {
               ytext.insert(0, content);
+              setInitialCode(content)
             }
           }
         }, 1000); // a slight delay, to let others connect
@@ -280,8 +282,13 @@ function EditorFragment({
     });
   }
 
+  function handleEditorChange(value: string | undefined) {
+    setCode(value!)
+  }
+
 
   return <Editor className='w-full h-[calc(100vh-50px-57px)]' theme={"vs-" + resolvedTheme} defaultLanguage={language} language={language} onMount={handleEditorDidMount}
+  onChange={handleEditorChange}
     options={{
       quickSuggestions: {
         other: "inline",

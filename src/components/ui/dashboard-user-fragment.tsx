@@ -8,6 +8,7 @@ import {
 import { Button } from "./button";
 import { signOut } from "next-auth/react";
 import SignOutButton from "./sign-out-button";
+import Image from "next/image";
 
 export default async function UserFragment() {
     const user = await getServerSession()
@@ -18,8 +19,17 @@ export default async function UserFragment() {
 
                 <div className="flex flex-col items-center justify-center">
                     <Avatar>
-                        <AvatarImage src={user?.user.image} alt="@shadcn" />
-                        <AvatarFallback>{user?.user?.name![0]}</AvatarFallback>
+                        {user?.user.image ? (
+                            <Image
+                                src={user.user.image}
+                                alt={user.user.name || 'User'}
+                                width={48}
+                                height={48}
+                                className="rounded-full"
+                            />
+                        ) : (
+                            <AvatarFallback>{user?.user?.name![0]}</AvatarFallback>
+                        )}
                     </Avatar>
                     <span>
                         {user?.user.name?.split(" ")[0]}
@@ -29,7 +39,7 @@ export default async function UserFragment() {
             <PopoverContent className="lg:w-[200px]">
                 <div className="text-sm flex flex-col gap-2">
                     <div className="text-center">
-                    {user?.user.name}
+                        {user?.user.name}
                     </div>
                     <SignOutButton />
                 </div>

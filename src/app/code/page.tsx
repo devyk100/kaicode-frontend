@@ -15,18 +15,18 @@ export default async function CodePage({
     searchParams: { [key: string]: string | string[] | undefined };
 }) {
     const user = await getServerSession();
-    await searchParams
     const session_id = searchParams.session_id;
     const wsServerUrl = env.WS_URL;
     console.log(wsServerUrl)
     console.log(session_id, "is the session ID")
     const content = await FetchContent(session_id as string)
+    const defaultLanguage = "python"
     return (<>
     <div>
-        <UpperLegendPane />
+        <UpperLegendPane defaultLanguage={defaultLanguage} />
         <ResizablePanelGroup direction="horizontal">
             <ResizablePanel defaultSize={80}>
-                <EditorWrapper content={content || ""} language="javascript" room={session_id! as string} wsUrl={wsServerUrl! as string} />
+                <EditorWrapper content={content || ""} language={defaultLanguage} room={session_id! as string} wsUrl={wsServerUrl! as string} />
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel>
