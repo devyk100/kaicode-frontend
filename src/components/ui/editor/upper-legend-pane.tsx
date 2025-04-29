@@ -26,6 +26,7 @@ export default function UpperLegendPane({
             <Select value={language} onValueChange={(val) => {
                 console.log("value changed to this", val)
                 setLanguage(val)
+                localStorage.setItem("language", val as string)
                 // IF THIS GUY IS AN ADMIN, CHANGE IT FOR EVERYONE
             }}>
                 <SelectTrigger className="w-[180px]">
@@ -47,7 +48,7 @@ export default function UpperLegendPane({
                                 Users connected:
                             </span>
                             <ScrollArea className="w-full h-full p-0 m-0 rounded-md" >
-                                <div className="whitespace-nowrap p-2">
+                                <div className="whitespace-nowrap p-2 flex gap-x-2">
                                     {[...data.entries()].map(([user_name, inside_set]) => {
                                         return (<span key={user_name} className="flex items-center justify-center w-fit">
                                             {user_name}: {[...inside_set].map(([color, clientId]) => {

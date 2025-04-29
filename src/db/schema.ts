@@ -30,7 +30,7 @@ import {
   
   // ---------------------- SESSIONS ----------------------
   export const sessions = pgTable("sessions", {
-    id: uuid("id").defaultRandom().primaryKey(), // UUID with default gen
+    id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
     content: bytea("content"),
     whiteboardContent: bytea("whiteboard_content"),

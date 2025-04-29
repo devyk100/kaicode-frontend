@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/tooltip"
 import { Textarea } from "./textarea";
 import { useLanguageStore } from "@/store/use-language-store";
+import { Play, Share } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 
 function createJudgeEvent(code: string, language: string, room_name: string, input: string): Event {
@@ -38,6 +40,27 @@ function formatDuration(ms: number): string {
     }
 }
 
+export function ShareButton() {
+    const handleShare = () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        toast({
+            title: "Copied link to clipboard",
+            description: "Shared this with your friends to let them join this session.",
+            className: "dark:bg-slate-900 bg-slate-100"
+          })
+      }).catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+    };
+  
+    return (
+      <Button variant="secondary" onClick={handleShare}>
+        Share <Share className="ml-2 h-4 w-4" />
+      </Button>
+    );
+  }
+  
+
 
 export default function JudgeOutputPane() {
     const { code } = useCodeStore()
@@ -54,10 +77,6 @@ export default function JudgeOutputPane() {
         setIsRunning(true)
     }
 
-    function onSoloCodeSubmit(code: string) {
-        
-    }
-
     useEffect(() => {
         setJudgeOutputCallback((event) => {
             setOutput(event.content.split('\n'));
@@ -68,9 +87,9 @@ export default function JudgeOutputPane() {
 
     return <>
         <div className="h-full w-full flex flex-col items-center justify-center gap-3">
-            {!isRunning ? <div className="flex gap-2">
-                <Button onClick={() => onCodeSubmit(code, socket!)}>Run Code</Button>
-                <Button>Run Code in Solo</Button>
+            {!isRunning ? <div className="flex gap-2 justify-between w-full px-2">
+                <Button onClick={() => onCodeSubmit(code, socket!)}> <Play/> Run Code</Button>
+                <ShareButton />
             </div> : <><RunningCodeAnimation /></>}
 
             <ResizablePanelGroup direction="vertical" className="h-100">

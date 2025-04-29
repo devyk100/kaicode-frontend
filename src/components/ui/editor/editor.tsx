@@ -61,7 +61,11 @@ function EditorFragment({
   const {setInitialCode, setCode} = useCodeStore()
   const {language, setInitialLanguage} = useLanguageStore()
   useEffect(() => {
-    setInitialLanguage(defaultLanguage)
+    if(localStorage.getItem("language") == null) {
+      setInitialLanguage(defaultLanguage)
+    } else {
+      setInitialLanguage(localStorage.getItem("language") as string)
+    }
   }, [])
   useEffect(() => {
     const provider = new WebsocketProvider(wsUrl + "ws", room, ydoc)
