@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
                 { role: "user", content: `${prompt}\n${prefix}` },
             ],
             temperature: 0.0,
-            max_tokens: 5,
+            max_tokens: 45,
         }),
         signal: controller.signal,
     });
