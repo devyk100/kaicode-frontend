@@ -168,7 +168,7 @@ function EditorFragment({
     observer.observe(container, { childList: true, subtree: true })
 
     const onAwarenessChange = ({ added, updated, removed }: any) => {
-      console.log(removed, "are the removed client")
+      // console.log(removed, "are the removed client")
       if (removed.length > 0) {
         for (let a of removed) {
           removeClientIdFromAll(String(a))

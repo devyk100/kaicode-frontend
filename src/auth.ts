@@ -123,11 +123,11 @@ export const authConfig: NextAuthOptions = {
         }
 
         // ✅ Store the userId from DB in the token
-        token.userId = userId;
+        token.userId = userId.toString();
         const userIdPayload = {
           userId: userId
         }
-        token.token = jwt.sign(userIdPayload, env.NEXTAUTH_SECRET, {
+        token.token = jwt.sign(userIdPayload, env.NEXTAUTH_SECRET as string, {
           expiresIn: "7d", // or "1h", "30m", etc.
         });
       }
