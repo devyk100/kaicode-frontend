@@ -13,15 +13,16 @@ import { notFound } from "next/navigation";
 import ResponsiveEditorWrapper from "@/components/ui/editor/responsive-editor-wrapper";
 import { isUserAllowed } from "@/actions/is-user-allowed";
 
-interface PageProps {
+export default async function CodePage({
+    searchParams,
+}: {
     searchParams: { [key: string]: string | string[] | undefined };
-}
+}) {
 
-export default async function CodePage({ searchParams }: PageProps) {
-    const user = await getServerSession();
     const session_id = searchParams.session_id;
     const wsServerUrl = env.WS_URL;
 
+    const user = await getServerSession();
     // basic gatekeeping
     let permissions;
     try {
