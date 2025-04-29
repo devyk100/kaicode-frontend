@@ -119,38 +119,38 @@ function UserPermissions({ session_id }: {
                                 email: email as string,
                                 session_id: session_id
                             })
-                            
+
                             setTimeout(() => {
                                 setRefresh(Math.random())
                             }, 2000)
 
                             if (inputRef.current) {
                                 inputRef.current.value = "";
-                              }
+                            }
                         }}>
                             Add user
                         </Button>
                     </div>
                     <ScrollArea>
-                    {allowedUsers.length == 1? "No one here yet": ""}
-                    {allowedUsers.map(val => {
-                        if(val.is_admin) return <></>
-                        return (<>
-                            <div key={val.id} className="flex items-center justify-between w-full px-2">
-                                <div className="text-sm">
-                                    {val.user_email}
+                        {allowedUsers.length == 1 ? "No one here yet" : ""}
+                        {allowedUsers.map(val => {
+                            if (val.is_admin) return <></>
+                            return (<>
+                                <div key={val.id} className="flex items-center justify-between w-full px-2">
+                                    <div className="text-sm">
+                                        {val.user_email}
+                                    </div>
+                                    <span className="cursor-pointer p-2" onClick={async () => {
+                                        await removeUserPermission({ email: val.user_email, session_id: val.sessionId })
+                                        setTimeout(() => {
+                                            setRefresh(Math.random())
+                                        }, 2000)
+                                    }}>
+                                        <X />
+                                    </span>
                                 </div>
-                                <span className="cursor-pointer p-2" onClick={async () => {
-                                    await removeUserPermission({email: val.user_email, session_id: val.sessionId})
-                                    setTimeout(() => {
-                                        setRefresh(Math.random())
-                                    }, 2000)
-                                }}>
-                                    <X />
-                                </span>
-                            </div>
-                        </>)
-                    })}<ScrollBar orientation="vertical" />
+                            </>)
+                        })}<ScrollBar orientation="vertical" />
                     </ScrollArea>
                 </div>
             </DialogContent>
@@ -190,7 +190,10 @@ export default function JudgeOutputPane({ isAdmin }: {
             <div className="flex gap-2 justify-between w-full px-2">
 
                 {!isRunning ? <Button onClick={() => onCodeSubmit(code, socket!)}> <Play /> Run Code</Button> : <><RunningCodeAnimation /></>}
-                <UserPermissions session_id={roomname} />
+                {
+                    isAdmin ?
+                        <UserPermissions session_id={roomname} /> : ""
+                }
                 <ShareButton />
             </div>
 
