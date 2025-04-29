@@ -9,23 +9,24 @@ import {
 import { useMapSetStore } from "@/store/use-colormap-store";
 import { useEffect, useState } from "react"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { useLanguageStore } from "@/store/use-language-store";
 
 
 export default function UpperLegendPane({
-    defaultLanguage
 }: {
     defaultLanguage: string;
 }) {
     const { data } = useMapSetStore()
-    
+    const { language, setLanguage } = useLanguageStore();
     useEffect(() => {
         console.log(data, "is the map of user name to color")
     }, [data])
     return (<>
         <div className="h-[50px] flex w-full items-center p-1">
-            <Select value={defaultLanguage} onValueChange={(val) => {
+            <Select value={language} onValueChange={(val) => {
                 console.log("value changed to this", val)
-                // make a call to change the language of this session, only allowed by the admin
+                setLanguage(val)
+                // IF THIS GUY IS AN ADMIN, CHANGE IT FOR EVERYONE
             }}>
                 <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Language" />

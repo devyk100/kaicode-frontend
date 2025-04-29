@@ -2,7 +2,6 @@
 import * as Y from 'yjs'
 import { WebsocketProvider } from 'y-websocket'
 import { MonacoBinding } from 'y-monaco'
-import * as monaco from 'monaco-editor'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Editor from '@monaco-editor/react'
 import { getSession } from 'next-auth/react'
@@ -10,6 +9,9 @@ import { useTheme } from 'next-themes'
 import { useMapSetStore } from '@/store/use-colormap-store'
 import { useSyncWsStore } from '@/store/use-sync-ws-store'
 import { useCodeStore } from '@/store/use-code-store'
+import { useLanguageStore } from '@/store/use-language-store'
+
+const languages: string[] = ["cpp", "python", "go", "java", "javascript"]
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -37,15 +39,15 @@ function getRandomColor() {
 function EditorFragment({
   wsUrl,
   room,
-  language,
+  defaultLanguage,
   content
 }: {
   wsUrl: string;
   room: string;
-  language: string;
+  defaultLanguage: string;
   content: string
 }) {
-  console.log(wsUrl, room, language, "FOR THE EDITOR SETUp")
+  console.log(wsUrl, room, defaultLanguage, "FOR THE EDITOR SETUp")
   const ydoc = useMemo(() => new Y.Doc(), []);
 
   const [editor, setEditor] = useState<any | null>(null)
@@ -57,9 +59,13 @@ function EditorFragment({
   // this effect manages the lifetime of the Yjs document and the provider
   const { connect, send } = useSyncWsStore()
   const {setInitialCode, setCode} = useCodeStore()
+  const {language, setInitialLanguage} = useLanguageStore()
+  useEffect(() => {
+    setInitialLanguage(defaultLanguage)
+  }, [])
   useEffect(() => {
     const provider = new WebsocketProvider(wsUrl + "ws", room, ydoc)
-    connect(wsUrl + "sync")
+    connect(wsUrl + "sync", room)
     setProvider(provider);
 
     const handleStatus = (event: { status: "connected" | "disconnected" | "connecting" }) => {
@@ -207,79 +213,81 @@ function EditorFragment({
     }, 1000)
 
 
-    monaco.languages.registerInlineCompletionsProvider(language, {
-      // @ts-ignore
-      provideInlineCompletions(model, position, context, token) {
-        return debounceAsync(async () => {
-          const prefix = model.getValueInRange({
-            startLineNumber: 1,
-            startColumn: 1,
-            endLineNumber: position.lineNumber,
-            endColumn: position.column,
-          });
-
-          if (token.isCancellationRequested || prefix.trim() === "") {
-            return { items: [] };
-          }
-          const prompt = `
-          Continue the following **incomplete** ${language} code snippet **without repeating** any existing part. Do not include any explanations, markdown, or comments. Respond with only the next few characters of valid JavaScript code that complete the code naturally. The response must be pure code, directly usable in an inline completion.
-          
-          Prefix:
-          `;
-
-
-          try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 2000);
-
-            const response = await fetch("/api/completions", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                prompt,
-                prefix
-              }),
-              // signal: controller.signal,
+    for(let languageTemp of languages) {
+      monaco.languages.registerInlineCompletionsProvider(languageTemp, {
+        // @ts-ignore
+        provideInlineCompletions(model, position, context, token) {
+          return debounceAsync(async () => {
+            const prefix = model.getValueInRange({
+              startLineNumber: 1,
+              startColumn: 1,
+              endLineNumber: position.lineNumber,
+              endColumn: position.column,
             });
-
-            clearTimeout(timeout);
-
-            if (!response.ok) throw new Error("Failed to fetch");
-
-            const data = await response.json();
-            const suggestion = data?.choices?.[0]?.message?.content?.trim().replace(/["`]/g, "") ?? "";
-
-            return {
-              items: [
-                {
-                  insertText: suggestion,
-                  range: {
-                    startLineNumber: position.lineNumber,
-                    endLineNumber: position.lineNumber,
-                    startColumn: position.column,
-                    endColumn: position.column,
-                  },
-                  command: {
-                    id: "",
-                    title: "Auto",
-                  },
+  
+            if (token.isCancellationRequested || prefix.trim() === "") {
+              return { items: [] };
+            }
+            const prompt = `
+            Continue the following **incomplete** ${languageTemp} code snippet **without repeating** any existing part. Do not include any explanations, markdown, or comments. Respond with only the next few characters of valid JavaScript code that complete the code naturally. The response must be pure code, directly usable in an inline completion.
+            
+            Prefix:
+            `;
+  
+  
+            try {
+              const controller = new AbortController();
+              const timeout = setTimeout(() => controller.abort(), 2000);
+  
+              const response = await fetch("/api/completions", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
                 },
-              ],
-            };
-          } catch (err) {
-            // @ts-ignore
-            console.warn("Debounced fetch error:", err.message);
-            return { items: [] };
-          }
-        }, 500); // ⏱️ 500ms debounce
-      },
-
-      freeInlineCompletions() {
-        console.log("Freed inline completions");
-      },
-    });
+                body: JSON.stringify({
+                  prompt,
+                  prefix
+                }),
+                // signal: controller.signal,
+              });
+  
+              clearTimeout(timeout);
+  
+              if (!response.ok) throw new Error("Failed to fetch");
+  
+              const data = await response.json();
+              const suggestion = data?.choices?.[0]?.message?.content?.trim().replace(/["`]/g, "") ?? "";
+  
+              return {
+                items: [
+                  {
+                    insertText: suggestion,
+                    range: {
+                      startLineNumber: position.lineNumber,
+                      endLineNumber: position.lineNumber,
+                      startColumn: position.column,
+                      endColumn: position.column,
+                    },
+                    command: {
+                      id: "",
+                      title: "Auto",
+                    },
+                  },
+                ],
+              };
+            } catch (err) {
+              // @ts-ignore
+              console.warn("Debounced fetch error:", err.message);
+              return { items: [] };
+            }
+          }, 500); // ⏱️ 500ms debounce
+        },
+  
+        freeInlineCompletions() {
+          console.log("Freed inline completions");
+        },
+      });
+    }
   }
 
   function handleEditorChange(value: string | undefined) {

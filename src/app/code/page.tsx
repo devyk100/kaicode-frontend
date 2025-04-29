@@ -26,7 +26,7 @@ export default async function CodePage({
         <UpperLegendPane defaultLanguage={defaultLanguage} />
         <ResizablePanelGroup direction="horizontal">
             <ResizablePanel defaultSize={80}>
-                <EditorWrapper content={content || ""} language={defaultLanguage} room={session_id! as string} wsUrl={wsServerUrl! as string} />
+                <EditorWrapper content={content || ""} defaultLanguage={defaultLanguage} room={session_id! as string} wsUrl={wsServerUrl! as string} />
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel>
