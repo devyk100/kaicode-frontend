@@ -1,6 +1,6 @@
 import EditorFragment from "@/components/ui/editor/editor";
 import { getServerSession } from "next-auth"
-import { env } from "process";
+import { env, permission } from "process";
 import dynamic from "next/dynamic";
 import EditorWrapper from "@/components/ui/editor/editor-wrapper";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -10,6 +10,8 @@ import { getRedisClient } from "@/lib/redis";
 import { FetchContent } from "@/actions/fetch-content";
 import { DoesSessionExist } from "@/actions/does-session-exist";
 import { notFound } from "next/navigation";
+import ResponsiveEditorWrapper from "@/components/ui/editor/responsive-editor-wrapper";
+import { isUserAllowed } from "@/actions/is-user-allowed";
 
 export default async function CodePage({
     searchParams
@@ -21,28 +23,29 @@ export default async function CodePage({
     const wsServerUrl = env.WS_URL;
 
     // basic gatekeeping
+    let permissions;
     try {
         const exists = await DoesSessionExist({session_id: session_id as string})
         if(!exists) {
             notFound()
         }
-
+        permissions = await isUserAllowed({
+            session_id: session_id as string,
+            userId: user?.user.email as string
+        })
+        if(!permissions.isAllowed) {
+            notFound();
+        }
     } catch {
         notFound()
     }
     const content = await FetchContent(session_id as string)
     const defaultLanguage = "python"
     return (<>
-    <div>
+    <div className="h-full">
         <UpperLegendPane defaultLanguage={defaultLanguage} />
-        <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel defaultSize={80} maxSize={90} minSize={40}>
-                <EditorWrapper content={content || ""} defaultLanguage={defaultLanguage} room={session_id! as string} wsUrl={wsServerUrl! as string} />
-            </ResizablePanel>
-            <ResizableHandle />
-            <ResizablePanel>
-                <JudgeOutputPane />
-            </ResizablePanel>
+        <ResizablePanelGroup direction="horizontal" className="h-full relative">
+            <ResponsiveEditorWrapper isAdmin={permissions.isAdmin} content={content} defaultLanguage={defaultLanguage} session_id={session_id as string} wsServerUrl={wsServerUrl as string} />
         </ResizablePanelGroup>
     </div>
     </>)
