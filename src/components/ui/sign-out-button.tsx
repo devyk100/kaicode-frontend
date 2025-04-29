@@ -8,9 +8,8 @@ export default function SignOutButton() {
     const handleRedirect = async () => {
         if (loading) return;
         setLoading(true);
-        
         signOut()
-        window.location.href = "/login";
+        // window.location.href = "/login";
     };
 
     return (<>

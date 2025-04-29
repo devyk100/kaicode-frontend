@@ -1,6 +1,5 @@
 "use client"
-
-import * as React from "react"
+import { useState, useEffect, forwardRef } from "react"
 import { cn } from "@/lib/utils"
 import {
   NavigationMenu,
@@ -11,6 +10,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 import Link from "next/link"
+import { getSession } from "next-auth/react"
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -51,6 +51,17 @@ const components: { title: string; href: string; description: string }[] = [
 ]
 
 export function CustomNavigationMenu() {
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const session = await getSession();
+      console.log(session, "from navbar")
+      setIsSignedIn(!!session);
+    })();
+  }, []);
+  console.log(isSignedIn)
+
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -62,20 +73,22 @@ export function CustomNavigationMenu() {
             Dashboard
           </Link>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link
-            href="/login"
-            className="px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground rounded-md"
-          >
-            Log in
-          </Link>
-        </NavigationMenuItem>
+        {
+          !isSignedIn ? <NavigationMenuItem>
+            <Link
+              href="/login"
+              className="px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground rounded-md"
+            >
+              Log in
+            </Link>
+          </NavigationMenuItem> : ""
+        }
       </NavigationMenuList>
     </NavigationMenu>
   )
 }
 
-const ListItem = React.forwardRef<
+const ListItem = forwardRef<
   React.ElementRef<"a">,
   React.ComponentPropsWithoutRef<"a">
 >(({ className, title, children, ...props }, ref) => {

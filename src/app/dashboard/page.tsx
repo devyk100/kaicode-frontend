@@ -5,9 +5,13 @@ import { CreateSessionDialog } from "@/components/ui/create-session-dialog";
 import UserFragment from "@/components/ui/dashboard-user-fragment";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
     const user = await getServerSession();
+    if(user == null) {
+        redirect("/login")
+    }
     const sessions = await getSessionsForUser(user?.user.email as string)
     return (<>
         <section className="w-screen flex flex-col items-center justify-center">
