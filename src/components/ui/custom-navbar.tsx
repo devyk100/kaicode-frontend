@@ -56,11 +56,11 @@ export function CustomNavigationMenu() {
   useEffect(() => {
     (async () => {
       const session = await getSession();
-      console.log(session, "from navbar")
+      // console.log(session, "from navbar")
       setIsSignedIn(!!session);
     })();
   }, []);
-  console.log(isSignedIn)
+  // console.log(isSignedIn)
 
   return (
     <NavigationMenu>

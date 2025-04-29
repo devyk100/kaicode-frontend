@@ -47,7 +47,7 @@ function EditorFragment({
   defaultLanguage: string;
   content: string
 }) {
-  console.log(wsUrl, room, defaultLanguage, "FOR THE EDITOR SETUp")
+  // console.log(wsUrl, room, defaultLanguage, "FOR THE EDITOR SETUp")
   const ydoc = useMemo(() => new Y.Doc(), []);
 
   const [editor, setEditor] = useState<any | null>(null)
@@ -130,7 +130,7 @@ function EditorFragment({
           addValue(state.user?.name, [state.user.color, clientId.toString()])
         }
       })
-      console.log(clientColorMap, "is the color map")
+      // console.log(clientColorMap, "is the color map")
     }
 
     updateClientColorMap()

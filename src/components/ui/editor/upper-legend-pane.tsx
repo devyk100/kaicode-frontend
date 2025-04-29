@@ -18,9 +18,9 @@ export default function UpperLegendPane({
 }) {
     const { data } = useMapSetStore()
     const { language, setLanguage } = useLanguageStore();
-    useEffect(() => {
-        console.log(data, "is the map of user name to color")
-    }, [data])
+    // useEffect(() => {
+    //     // console.log(data, "is the map of user name to color")
+    // }, [data])
     return (<>
         <div className="h-[50px] flex w-full items-center p-1">
             <Select value={language} onValueChange={(val) => {

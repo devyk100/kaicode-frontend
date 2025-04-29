@@ -16,10 +16,10 @@ import { isUserAllowed } from "@/actions/is-user-allowed";
 export default async function CodePage({
     searchParams,
 }: {
-    searchParams: { [key: string]: string | string[] | undefined };
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
 
-    const session_id = searchParams.session_id;
+    const session_id = (await searchParams).session_id;
     const wsServerUrl = env.WS_URL;
 
     const user = await getServerSession();
