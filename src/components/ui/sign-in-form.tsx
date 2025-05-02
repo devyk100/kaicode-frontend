@@ -1,4 +1,3 @@
-// app/login/page.tsx
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -10,6 +9,9 @@ import { Label } from "@/components/ui/label";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -24,7 +26,7 @@ export default function SignInForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
@@ -44,24 +46,53 @@ export default function SignInForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded-xl shadow">
-      <h1 className="text-2xl font-bold mb-4">Login</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <Input type="email" {...register("email")} />
-          {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
-        </div>
-        <div>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="name@example.com"
+          {...register("email")}
+          className={errors.email ? "border-destructive" : ""}
+        />
+        {errors.email && (
+          <p className="text-sm text-destructive">{errors.email.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
           <Label htmlFor="password">Password</Label>
-          <Input type="password" {...register("password")} />
-          {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+          <Link
+            href="/forgot-password"
+            className="text-sm text-primary hover:underline"
+          >
+            Forgot password?
+          </Link>
         </div>
+        <Input
+          id="password"
+          type="password"
+          placeholder="••••••••"
+          {...register("password")}
+          className={errors.password ? "border-destructive" : ""}
+        />
+        {errors.password && (
+          <p className="text-sm text-destructive">{errors.password.message}</p>
+        )}
+      </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-        <Button type="submit" className="w-full">Login</Button>
-      </form>
-    </div>
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? "Signing in..." : "Sign in"}
+      </Button>
+    </form>
   );
 }

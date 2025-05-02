@@ -15,7 +15,7 @@ export default async function DashboardPage() {
     const sessions = await getSessionsForUser(user?.user.email as string)
     return (<>
         <section className="w-screen flex flex-col items-center justify-center">
-            <div className="w-[70%] mt-8 border-b-2 p-2 flex justify-between">
+            <div className="w-full m-1 md:w-[70%] mt-8 border-b-2 p-2 flex justify-between">
                 <div className="flex flex-col w-fit items-start">
                     <CreateSessionDialog />
                     <div className="px-2">
@@ -24,7 +24,7 @@ export default async function DashboardPage() {
                 </div>
                 <UserFragment />
             </div>
-            <div className="w-[70%] p-4">
+            <div className="w-full m-1 md:w-[70%] p-4">
                 <h3 className="text-2xl font-semibold">
                     Previous Sessions
                 </h3>
