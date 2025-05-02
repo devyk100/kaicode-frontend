@@ -46,9 +46,9 @@ export default function SignInForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">Email</Label>
         <Input
           id="email"
           type="email"
@@ -59,7 +59,7 @@ export default function SignInForm() {
         {errors.email && (
           <p className="text-sm text-destructive">{errors.email.message}</p>
         )}
-      </div>
+        </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -81,7 +81,7 @@ export default function SignInForm() {
         {errors.password && (
           <p className="text-sm text-destructive">{errors.password.message}</p>
         )}
-      </div>
+        </div>
 
       {error && (
         <Alert variant="destructive">
@@ -93,6 +93,6 @@ export default function SignInForm() {
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? "Signing in..." : "Sign in"}
       </Button>
-    </form>
+      </form>
   );
 }

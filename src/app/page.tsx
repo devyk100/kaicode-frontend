@@ -8,6 +8,13 @@ import Link from "next/link";
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
+      {/* Branding */}
+      <div className="container mx-auto px-4 py-6">
+        <h1 className="text-2xl font-bold bg-gradient-to-b from-blue-300 to-blue-500 text-transparent bg-clip-text">
+          KaiCode
+        </h1>
+      </div>
+
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
