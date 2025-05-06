@@ -4,7 +4,7 @@
   import { ThemeProvider } from "@/components/providers/theme-provider";
   import { CustomNavigationMenu } from "@/components/ui/custom-navbar";
   import { Toaster } from "@/components/ui/toaster";
-
+  import { Analytics } from "@vercel/analytics/react"
   const geistSans = Geist({
     variable: "--font-geist-sans",
     subsets: ["latin"],
@@ -41,6 +41,7 @@
             {children}
             <Toaster />
           </ThemeProvider>
+          <Analytics />
         </body>
       </html>
     );
