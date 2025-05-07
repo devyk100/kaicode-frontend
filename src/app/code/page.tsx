@@ -38,8 +38,9 @@ export default async function CodePage({
             console.log("NOT ALLOWED")
             notFound();
         }
-    } catch {
+    } catch (error) {
         console.log("ERROR IN PROCESSING PERMISSIONS")
+        console.log(error)
         notFound()
     }
     const content = await FetchContent(session_id as string)
