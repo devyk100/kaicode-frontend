@@ -23,17 +23,18 @@ export default async function CodePage({
     const wsServerUrl = env.WS_URL;
 
     const user = await getServerSession();
-    let permissions;
+    let isAllowed: boolean = false;
     try {
         const exists = await DoesSessionExist({ session_id: session_id as string })
         if (!exists) {
             console.log("SESSION DOES NOT EXIST")
             notFound()
         }
-        permissions = await isUserAllowed({
+        const permissions = await isUserAllowed({
             session_id: session_id as string,
             user_email: user?.user.email as string
         })
+        isAllowed = permissions.isAllowed;
         if (!permissions.isAllowed) {
             console.log("NOT ALLOWED")
             notFound();
@@ -49,7 +50,7 @@ export default async function CodePage({
         <div className="h-full">
             <UpperLegendPane defaultLanguage={defaultLanguage} />
             <ResizablePanelGroup direction="horizontal" className="h-full relative">
-                <ResponsiveEditorWrapper isAdmin={permissions.isAdmin} content={content} defaultLanguage={defaultLanguage} session_id={session_id as string} wsServerUrl={wsServerUrl as string} />
+                <ResponsiveEditorWrapper isAdmin={isAllowed} content={content} defaultLanguage={defaultLanguage} session_id={session_id as string} wsServerUrl={wsServerUrl as string} />
             </ResizablePanelGroup>
         </div>
     </>)
