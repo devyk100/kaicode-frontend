@@ -3,13 +3,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { CreateSessionDialog } from "@/components/ui/create-session-dialog";
 import UserFragment from "@/components/ui/dashboard-user-fragment";
+import DeleteSessionButton from "@/components/ui/delete-session-button";
+import { Trash2 } from "lucide-react";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
     const user = await getServerSession();
-    if(user == null) {
+    if (user == null) {
         redirect("/login")
     }
     const sessions = await getSessionsForUser(user?.user.email as string)
@@ -34,14 +36,17 @@ export default async function DashboardPage() {
                             <Link
                                 key={index}
                                 href={`/code?session_id=${val.id}`}
-                                className="cursor-pointer hover:dark:bg-slate-900 rounded-md hover:bg-slate-200 p-2"
+                                className="cursor-pointer flex items-center hover:dark:bg-slate-900 rounded-md hover:bg-slate-200 p-2"
                             >
-                                <h4 className="text-xl font-semibold">
-                                    {val.name}
-                                </h4>
-                                <span className="italic text-sm">
-                                    {val.id}
-                                </span>
+                                <div className="w-full h-full">
+                                    <h4 className="text-xl font-semibold">
+                                        {val.name}
+                                    </h4>
+                                    <span className="italic text-sm">
+                                        {val.id}
+                                    </span>
+                                </div>
+                                <DeleteSessionButton session_id={val.id}/>
                             </Link>
                         </>)
                     })}

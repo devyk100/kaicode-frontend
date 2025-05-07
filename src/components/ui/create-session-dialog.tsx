@@ -51,33 +51,35 @@ export function CreateSessionDialog() {
                     <DialogTitle>Create New Session</DialogTitle>
                 </DialogHeader>
                 <span className="text-xs">Name your session</span>
+                <form onSubmit={(e) => {
+                    e.preventDefault()
+                    handleCreate()
+                }}>
+                    <div className="flex flex-col gap-y-4">
+                        <div className="flex items-center gap-2">
+                            <Label htmlFor="name" className="text-right">
+                                Name
+                            </Label>
+                            <Input
+                                id="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="w-full"
+                            />
+                        </div>
+                        <div className="flex gap-2 items-center">
+                            <Label htmlFor="join-mode">Allow Anyone to Join</Label>
+                            <Switch id="join-mode" checked={enabled}
+                                onCheckedChange={setEnabled}
+                            />
+                            <p className="ml-4">{enabled ? "On" : "Off"}</p>
+                        </div>
 
-                <div className="flex flex-col gap-y-4">
-                    <div className="flex items-center gap-2">
-                        <Label htmlFor="name" className="text-right">
-                            Name
-                        </Label>
-                        <Input
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-full"
-                        />
                     </div>
-                    <div className="flex gap-2 items-center">
-                        <Label htmlFor="join-mode">Allow Anyone to Join</Label>
-                        <Switch id="join-mode" checked={enabled}
-                            onCheckedChange={setEnabled}
-                        />
-                        <p className="ml-4">{enabled ? "On" : "Off"}</p>
-                    </div>
-
-                </div>
-                <DialogFooter>
-                    <Button type="submit" onClick={handleCreate} disabled={isLoading}>
+                    <Button className="w-full my-2" type="submit" disabled={isLoading}>
                         {isLoading ? "Creating..." : "Create"}
                     </Button>
-                </DialogFooter>
+                </form>
             </DialogContent>
         </Dialog>
     )

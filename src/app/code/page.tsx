@@ -23,7 +23,6 @@ export default async function CodePage({
     const wsServerUrl = env.WS_URL;
 
     const user = await getServerSession();
-    // basic gatekeeping
     let permissions;
     try {
         const exists = await DoesSessionExist({ session_id: session_id as string })
@@ -32,7 +31,7 @@ export default async function CodePage({
         }
         permissions = await isUserAllowed({
             session_id: session_id as string,
-            userId: user?.user.email as string
+            user_email: user?.user.email as string
         })
         if (!permissions.isAllowed) {
             notFound();

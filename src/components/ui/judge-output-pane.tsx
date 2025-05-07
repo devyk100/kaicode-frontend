@@ -110,27 +110,28 @@ function UserPermissions({ session_id }: {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="flex flex-col items-center justify-center">
-                    <div className="flex gap-3 justify-around mb-2">
+                    <form className="flex gap-3 justify-around mb-2" onSubmit={async (event) => {
+                        event.preventDefault()
+                        const email = inputRef.current?.value;
+
+                        await addUserPermission({
+                            email: email as string,
+                            session_id: session_id
+                        })
+
+                        setTimeout(() => {
+                            setRefresh(Math.random())
+                        }, 2000)
+
+                        if (inputRef.current) {
+                            inputRef.current.value = "";
+                        }
+                    }}>
                         <Input className="w-[300px]" ref={inputRef} />
-                        <Button onClick={async () => {
-                            const email = inputRef.current?.value;
-
-                            await addUserPermission({
-                                email: email as string,
-                                session_id: session_id
-                            })
-
-                            setTimeout(() => {
-                                setRefresh(Math.random())
-                            }, 2000)
-
-                            if (inputRef.current) {
-                                inputRef.current.value = "";
-                            }
-                        }}>
+                        <Button type="submit">
                             Add user
                         </Button>
-                    </div>
+                    </form>
                     <ScrollArea>
                         {allowedUsers.length == 1 ? "No one here yet" : ""}
                         {allowedUsers.map(val => {
