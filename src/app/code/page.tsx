@@ -27,6 +27,7 @@ export default async function CodePage({
     try {
         const exists = await DoesSessionExist({ session_id: session_id as string })
         if (!exists) {
+            console.log("SESSION DOES NOT EXIST")
             notFound()
         }
         permissions = await isUserAllowed({
@@ -34,8 +35,7 @@ export default async function CodePage({
             user_email: user?.user.email as string
         })
         if (!permissions.isAllowed) {
-
-        console.log("NOT ALLOWED")
+            console.log("NOT ALLOWED")
             notFound();
         }
     } catch {
