@@ -34,9 +34,12 @@ export default async function CodePage({
             user_email: user?.user.email as string
         })
         if (!permissions.isAllowed) {
+
+        console.log("NOT ALLOWED")
             notFound();
         }
     } catch {
+        console.log("ERROR IN PROCESSING PERMISSIONS")
         notFound()
     }
     const content = await FetchContent(session_id as string)
