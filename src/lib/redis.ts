@@ -23,7 +23,12 @@ if (!global._redis) {
 
 export async function getRedisClient() {
   if (!client.isOpen) {
-    await client.connect();
+    try {
+      await client.connect();
+    } catch (error) {
+      console.error("Error connecting to Redis:", error);
+      throw error;
+    }
   }
   return client;
 }
