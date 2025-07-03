@@ -138,10 +138,10 @@ export default function LandingPage() {
           </div>
           <div className="relative aspect-video rounded-lg overflow-hidden shadow-2xl">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-              <div className="text-center">
-                <Play className="h-16 w-16 text-primary mx-auto mb-4" />
-                <p className="text-lg font-medium">Demo Video Coming Soon</p>
-              </div>
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/anc9H7Q3oN8"
+                ></iframe>
             </div>
           </div>
         </div>
