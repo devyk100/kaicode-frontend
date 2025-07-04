@@ -15,10 +15,36 @@
     subsets: ["latin"],
   });
 
-  export const metadata: Metadata = {
-    title: "Kaicode",
-    description: "A collaborative programming playground.",
-  };
+export const metadata: Metadata = {
+  title: "Kaicode: Collaborative Code Playground for Real-Time Programming",
+  description:
+    "Kaicode is a collaborative code playground for real-time programming. Practice coding, learn together, and build projects with our online code editor.",
+  keywords: [
+    "collaborative programming",
+    "code playground",
+    "online code editor",
+    "real-time collaboration",
+    "coding platform",
+    "learn to code",
+    "programming practice",
+  ],
+  robots: "index, follow",
+  openGraph: {
+    title: "Kaicode: Collaborative Code Playground for Real-Time Programming",
+    description:
+      "Kaicode is a collaborative code playground for real-time programming. Practice coding, learn together, and build projects with our online code editor.",
+    url: "https://kc.yashk.dev",
+    siteName: "Kaicode",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kaicode: Collaborative Code Playground for Real-Time Programming",
+    description:
+      "Kaicode is a collaborative code playground for real-time programming. Practice coding, learn together, and build projects with our online code editor.",
+    site: "@kaicode", 
+    creator: "@devyk100",
+  },
+};
 
   export default function RootLayout({
     children,
