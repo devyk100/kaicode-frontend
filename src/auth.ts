@@ -1,5 +1,6 @@
 import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
+import GitHubProvider from "next-auth/providers/github";
+// import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextAuthOptions } from "next-auth";
 import { eq } from "drizzle-orm";
 import { users } from "./db/schema";
@@ -7,7 +8,7 @@ import { db } from "./db/client";
 import NextAuth from "next-auth";
 import { env } from "process";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs"
+// import bcrypt from "bcryptjs"
 declare module "next-auth" {
   interface Session {
     user: {
@@ -56,42 +57,46 @@ export const authConfig: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-
-        const user = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, credentials.email))
-          .then((res) => res[0]);
-
-        // ✅ Reject if no user, or if user was created by OAuth (no password set)
-        if (!user || !user.password) {
-          console.warn("Attempt to sign in with credentials for OAuth-only user");
-          return null;
-        }
-
-        const passwordMatch = await bcrypt.compare(credentials.password, user.password);
-        if (!passwordMatch) return null;
-
-        return {
-          id: user.id.toString(),
-          email: user.email,
-          name: user.name,
-          token: jwt.sign({ userId: user.id }, process.env.NEXTAUTH_SECRET!, {
-            expiresIn: "7d"
-          }),
-        
-        };
-      }
-
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
+    // CredentialsProvider({
+    //   name: "Credentials",
+    //   credentials: {
+    //     email: { label: "Email", type: "text" },
+    //     password: { label: "Password", type: "password" },
+    //   },
+    //   async authorize(credentials) {
+    //     if (!credentials?.email || !credentials?.password) return null;
+
+    //     const user = await db
+    //       .select()
+    //       .from(users)
+    //       .where(eq(users.email, credentials.email))
+    //       .then((res) => res[0]);
+
+    //     // ✅ Reject if no user, or if user was created by OAuth (no password set)
+    //     if (!user || !user.password) {
+    //       console.warn("Attempt to sign in with credentials for OAuth-only user");
+    //       return null;
+    //     }
+
+    //     const passwordMatch = await bcrypt.compare(credentials.password, user.password);
+    //     if (!passwordMatch) return null;
+
+    //     return {
+    //       id: user.id.toString(),
+    //       email: user.email,
+    //       name: user.name,
+    //       token: jwt.sign({ userId: user.id }, process.env.NEXTAUTH_SECRET!, {
+    //         expiresIn: "7d"
+    //       }),
+        
+    //     };
+    //   }
+
+    // }),
 
   ],
   callbacks: {

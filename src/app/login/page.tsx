@@ -1,9 +1,9 @@
 "use client";
-import SignInForm from "@/components/ui/sign-in-form";
+// import SignInForm from "@/components/ui/sign-in-form";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Github, Mail } from "lucide-react";
-import Link from "next/link";
+import { Github } from "lucide-react";
+// import Link from "next/link";
 
 export default function Login() {
     return (
@@ -45,26 +45,15 @@ export default function Login() {
                         Continue with Google
                     </Button>
 
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">
-                                Or continue with
-                            </span>
-                        </div>
-                    </div>
-
-                    <SignInForm />
+                    <Button
+                        onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+                        variant="outline"
+                        className="w-full"
+                    >
+                        <Github className="mr-2 h-4 w-4" />
+                        Continue with GitHub
+                    </Button>
                 </div>
-
-                <p className="text-center text-sm text-muted-foreground">
-                    Don't have an account?{" "}
-                    <Link href="/signup" className="text-primary hover:underline">
-                        Sign up
-                    </Link>
-                </p>
             </div>
         </div>
     );
